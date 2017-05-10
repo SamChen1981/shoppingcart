@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neusoft.user.dao.IOrdersDao">
+	<resultMap type="com.neusoft.user.pojo.Orders" id="map1">
+		<result column="id" 		property="id" 			jdbcType="INTEGER"/>
+		<result column="userid" 	property="userid" 		jdbcType="INTEGER"/>
+		<result column="createtime" property="createtime" 	jdbcType="DATE"/>
+		<result column="state" 		property="state" 		jdbcType="INTEGER"/>
+		<result column="price" 		property="price" 		jdbcType="INTEGER"/>
+		<result column="cmid" 		property="cmid" 		jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<resultMap type="com.neusoft.user.util.OrdersUtil" id="map2">
+		<result column="orid" 		property="orid" 		jdbcType="INTEGER"/>
+		<result column="userid" 	property="userid" 		jdbcType="INTEGER"/>
+		<result column="cretime"	property="cretime" 		jdbcType="DATE"/>
+		<result column="state" 		property="state" 		jdbcType="INTEGER"/>
+		<result column="allprice" 	property="allprice" 	jdbcType="INTEGER"/>
+
+		<collection property="list" ofType="com.neusoft.user.util.OrdersListUtil">
+			<result column="cname" 		property="cname" 		jdbcType="VARCHAR"/>
+			<result column="price" 		property="price" 		jdbcType="INTEGER"/>
+			<result column="cnum" 		property="num" 			jdbcType="INTEGER"/>
+		</collection>
+	</resultMap>
+
+	<sql id="columns">id,userid,createtime,state,price,cmid</sql>
+
+	<sql id="tableName">orders</sql>
+	
+	<insert id="insert" parameterType="com.neusoft.user.pojo.Orders" >
+		insert into <include refid="tableName"/>
+			(<include refid="columns"/>)
+		values
+			(seq_orders_id.nextval,#{userid},sysdate,#{state},#{price},seq_orderscommodify_id.nextval)
+	</insert>
+
+	<insert id="insertoc" parameterType="com.neusoft.user.pojo.OrdersCommodify">
+			insert into OrdersCommodify (id,ocid,num)
+			values
+			(seq_orderscommodify_id.currval,#{ocid},#{num})
+	</insert>
+
+	<select id="select" parameterType="long" resultType="com.neusoft.user.pojo.Commodity">
+		select * from
+			<include refid="tableName"/>
+		where id = #{id}
+	</select>
+
+	<select id="selectOrd" parameterType="com.neusoft.user.pojo.Orders" resultMap="map2">
+		select ord.aid orid,ord.uuid userid,ord.otime cretime,
+       			ord.ostate state,comm.comname cname,
+       			comm.price price,ord.cnum cNUM,ord.oprice allprice
+        FROM
+            (SELECT a.id aid,a.userid uuid,
+                    a.createtime otime,a.state ostate,
+                    a.price oprice,b.ocid cid,b.num cnum
+            FROM
+               		orders a
+               			LEFT JOIN
+               		orderscommodify b
+                    	ON
+                    a.cmid = b.id
+            <where>
+					<if test="id != 0">and a.id = #{id}</if>
+					<if test="userid != 0">and a.userid = #{userid}</if>
+					<if test="state != 0">and a.state = #{state}</if>
+					<if test="statime != null and statime != ''">
+						<if test="endtime != null and endtime != ''">and a.createtime between to_date('${statime}','yyyy-mm-dd') and to_date('${endtime}','yyyy-mm-dd')</if>
+					</if>
+					<if test="staprice != 0">
+						<if test="endprice != 0">and a.price between #{staprice} and #{endprice}</if>
+					</if>
+			</where>
+                    ) ord,commodity comm
+            WHERE
+            	ord.cid = comm.id
+	</select>
+
+	<update id="update" parameterType="com.neusoft.user.pojo.Orders" >
+		update 
+			<include refid="tableName"/>
+		set
+			state = #{state}, price = #{price}
+		<where>
+			<if test="id != 0">and id = #{id}</if>
+		</where>
+	</update >
+
+	<delete id="delete" parameterType="long">
+		delete from
+			<include refid="tableName"/>
+		where
+			id = #{id}
+	</delete>
+
+	<delete id="deleteoc" parameterType="long">
+		delete from
+			OrdersCommodify
+		where
+		id = #{id}
+	</delete>
+
+	<select  id="selectid"  resultType="com.neusoft.user.pojo.Orders" parameterType="long">
+		select 
+		  <include refid="columns"/>
+	    from 
+	      <include refid="tableName"/>	      
+	    where
+			id = #{id}
+	</select>
+	
+</mapper>

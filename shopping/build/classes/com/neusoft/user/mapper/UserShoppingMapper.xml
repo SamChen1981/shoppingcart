@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neusoft.user.dao.IUserDao">
+	<resultMap type="com.neusoft.user.pojo.Usershopping" id="map1">
+		<result column="id" 		property="id" 			jdbcType="INTEGER"/>
+		<result column="username" 	property="username" 	jdbcType="VARCHAR"/>
+		<result column="userpwd" 	property="userpwd" 		jdbcType="VARCHAR"/>
+		<result column="nick" 		property="nick" 		jdbcType="VARCHAR"/>
+		<result column="userlevel" 	property="userlevel" 	jdbcType="INTEGER"/>
+		<result column="email" 		property="email" 		jdbcType="VARCHAR"/>
+		<result column="tel" 		property="tel" 			jdbcType="INTEGER"/>
+	</resultMap>
+
+	<sql id="columns">id,username,userpwd,nick,email,tel,userlevel</sql>
+
+	<sql id="tableName">usershopping</sql>
+	
+	<insert id="insert" parameterType="com.neusoft.user.pojo.Usershopping" >
+		insert into <include refid="tableName"/>
+			(<include refid="columns"/>)
+		values
+				(seq_usershopping_id.nextval,#{username},#{userpwd},#{nick},#{email},#{tel},1)
+	</insert>
+	<update id="update" parameterType="com.neusoft.user.pojo.Usershopping" >
+		update 
+			<include refid="tableName"/>
+		set
+			userpwd=#{userpwd},nick=#{nick},email=#{email},tel=#{tel}
+		where
+			id=#{id}
+	</update >
+	<delete id="delete" >
+		delete from
+			<include refid="tableName"/>
+		where
+			id = #{id}
+	</delete>
+
+	<select  id="selectOne"  resultMap="map1" parameterType="com.neusoft.user.pojo.Usershopping" >
+		select
+			<include refid="columns"/>
+		from
+			<include refid="tableName"/>
+		<where>
+			<if test="t != null">
+				<if test="t.id != 0">and id=#{t.id}</if>
+			</if>
+		</where>
+	</select>
+
+	<select  id="select"  resultMap="map1" parameterType="com.neusoft.user.pojo.Usershopping" >
+		select
+		<include refid="columns"/>
+		from
+		<include refid="tableName"/>
+		<where>
+			<if test="t != null">
+				<if test="t.username != null and t.username != ''">and username = #{t.username}</if>
+				<if test="t.userpwd != null and t.userpwd != ''">and userpwd = #{t.userpwd}</if>
+				<if test="t.id != 0">and id=#{t.id}</if>
+			</if>
+		</where>
+	</select>
+</mapper>

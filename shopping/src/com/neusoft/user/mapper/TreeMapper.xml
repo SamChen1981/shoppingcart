@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neusoft.user.dao.ITreeDao">
+	<resultMap type="com.neusoft.user.pojo.Tree" id="map1">
+		<result column="id" 		property="id" 			jdbcType="INTEGER"/>
+		<result column="name" 		property="name" 		jdbcType="VARCHAR"/>
+		<result column="url" 		property="url" 			jdbcType="VARCHAR"/>
+		<result column="icon" 		property="icon" 		jdbcType="VARCHAR"/>
+		<result column="pid" 		property="pid" 			jdbcType="INTEGER"/>
+	</resultMap>
+
+	<resultMap type="com.neusoft.user.pojo.Tree" id="map2">
+		<result column="id" 		property="id" 			jdbcType="INTEGER"/>
+		<result column="name" 		property="name" 		jdbcType="VARCHAR"/>
+		<result column="url" 		property="url" 			jdbcType="VARCHAR"/>
+		<result column="icon" 		property="icon" 		jdbcType="VARCHAR"/>
+		<result column="pid" 		property="pid" 			jdbcType="INTEGER"/>
+
+		<collection property="childTree" ofType="com.neusoft.user.pojo.Tree">
+			<result column="id" 		property="id" 			jdbcType="INTEGER"/>
+			<result column="name" 		property="name" 		jdbcType="VARCHAR"/>
+			<result column="url" 		property="url" 			jdbcType="VARCHAR"/>
+			<result column="icon" 		property="icon" 		jdbcType="VARCHAR"/>
+			<result column="pid" 		property="pid" 			jdbcType="INTEGER"/>
+		</collection>
+	</resultMap>
+
+	<sql id="columns">id,name,url,icon,pid</sql>
+
+	<sql id="tableName">tree</sql>
+	
+	<insert id="insert" parameterType="com.neusoft.user.pojo.Tree" >
+		insert into <include refid="tableName"/>
+			(<include refid="columns"/>)
+		values
+			(seq_tree_id.nextval,#{name},#{url},#{icon},#{pid})
+	</insert>
+	<update id="update" parameterType="com.neusoft.user.pojo.Tree" >
+		update 
+			<include refid="tableName"/>
+		set
+			name=#{name},url=#{url},icon=#{icon},pid=#{pid}
+		where
+			id=#{id}
+	</update >
+	<delete id="delete" >
+		delete from
+			<include refid="tableName"/>
+		where
+			id = #{id}
+	</delete>
+
+	<select  id="select"  resultMap="map1" parameterType="com.neusoft.user.pojo.Classify" >
+		select 
+		  <include refid="columns"/>
+	    from 
+	      <include refid="tableName"/>	      
+	    <where>
+			<if test="t != null">
+	      		<if test="t.name != null and t.name !=''">and name=#{t.name}</if>
+	    		<if test="t.id != 0">and id=#{t.id}</if>
+			</if>
+	    </where>	
+	</select>
+
+	<select id="selectTree" resultMap="map2" parameterType="com.neusoft.user.pojo.Tree">
+		select
+			a.id,a.name,a.url,a.icon,a.icon,a.pid,
+			b.id,b.name,b.url,b.icon,b.icon,b.pid
+		FROM
+			(select * from tree where pid = -1) a
+				left join
+			(select * from tree where pid &lt;&gt; -1) b
+				on a.id = b.pid
+	</select>
+	
+</mapper>

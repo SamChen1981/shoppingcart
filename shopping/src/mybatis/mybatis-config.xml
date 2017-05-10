@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD SQL Map Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<!--配置核心配置文件，写SQL语句-->
+<configuration>
+
+    <settings>
+        <setting name="cacheEnabled" value="true" /><!-- 全局映射器启用缓存 -->
+        <setting name="useGeneratedKeys" value="true" />
+        <setting name="defaultExecutorType" value="REUSE" />
+    </settings>
+
+    <mappers>
+        <mapper resource="com/neusoft/user/mapper/ClassifyMapper.xml"/>
+        <mapper resource="com/neusoft/user/mapper/CommodityMapper.xml"/>
+        <mapper resource="com/neusoft/user/mapper/OrdersMapper.xml"/>
+        <mapper resource="com/neusoft/user/mapper/RelationMapper.xml"/>
+        <mapper resource="com/neusoft/user/mapper/ShoppingCartMapper.xml"/>
+        <mapper resource="com/neusoft/user/mapper/TreeMapper.xml"/>
+        <mapper resource="com/neusoft/user/mapper/UserShoppingMapper.xml"/>
+    </mappers>
+</configuration>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neusoft.user.dao.IClassifyDao">
+	<resultMap type="com.neusoft.user.pojo.Classify" id="map1">
+		<result column="id" 		property="id" 			jdbcType="INTEGER"/>
+		<result column="CLASSS" 	property="CLASSS" 		jdbcType="VARCHAR"/>
+	</resultMap>
+
+	<sql id="columns">id,CLASSS</sql>
+
+	<sql id="tableName">classify</sql>
+	
+	<insert id="insert" parameterType="com.neusoft.user.pojo.Classify" >
+		insert into <include refid="tableName"/>
+			(<include refid="columns"/>)
+		values
+			(seq_commodity_id.nextval,#{CLASSS})
+	</insert>
+	<update id="update" parameterType="com.neusoft.user.pojo.Classify" >
+		update 
+			<include refid="tableName"/>
+		set
+			CLASSS=#{CLASSS}
+		where
+			id=#{id}
+	</update >
+	<delete id="delete" >
+		delete from
+			<include refid="tableName"/>
+		where
+			id = #{id}
+	</delete>
+
+	<select  id="select"  resultMap="map1" parameterType="com.neusoft.user.pojo.Classify" >
+		select 
+		  <include refid="columns"/>
+	    from 
+	      <include refid="tableName"/>	      
+	    <where>
+			<if test="t != null">
+	      		<if test="t.CLASSS != null and t.CLASSS !=''">and CLASSS=#{t.CLASSS}</if>
+	    		<if test="t.id != 0">and id=#{t.id}</if>
+			</if>
+	    </where>	
+	</select>
+	
+</mapper>

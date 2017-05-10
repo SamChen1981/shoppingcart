@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neusoft.user.dao.ISCDao">
+	<resultMap type="com.neusoft.user.pojo.ShoppingCart" id="map1">
+		<result column="id" 		property="id" 			jdbcType="INTEGER"/>
+		<result column="userid" 	property="userid" 		jdbcType="INTEGER"/>
+		<result column="shopping" 	property="shopping" 	jdbcType="INTEGER"/>
+		<result column="num" 		property="num" 			jdbcType="INTEGER"/>
+		<result column="price" 		property="price" 		jdbcType="INTEGER"/>
+	</resultMap>
+
+	<resultMap type="com.neusoft.user.util.ShoppingListUtil" id="map2">
+		<result column="id" 		property="id" 			jdbcType="INTEGER"/>
+		<result column="comid" 		property="comid" 		jdbcType="INTEGER"/>
+		<result column="userid" 	property="userid" 		jdbcType="INTEGER"/>
+		<result column="comname" 	property="comname" 		jdbcType="VARCHAR"/>
+		<result column="cid" 		property="cid" 			jdbcType="INTEGER"/>
+		<result column="describe" 	property="describe" 	jdbcType="VARCHAR"/>
+		<result column="cprice" 	property="cprice" 		jdbcType="INTEGER"/>
+		<result column="snum" 		property="snum" 		jdbcType="INTEGER"/>
+		<result column="allprice" 	property="allprice" 	jdbcType="INTEGER"/>
+	</resultMap>
+
+	<sql id="columns">id,userid,shopping,num,price</sql>
+
+	<sql id="tableName">shoppingcart</sql>
+	
+	<insert id="insert" parameterType="com.neusoft.user.pojo.ShoppingCart" >
+		insert into <include refid="tableName"/>
+			(<include refid="columns"/>)
+		values
+			(seq_shoppingcart_id.nextval,#{userid},#{shopping},#{num},#{price})
+	</insert>
+	<update id="update" parameterType="com.neusoft.user.pojo.ShoppingCart" >
+		update 
+			<include refid="tableName"/>
+		set
+			shopping=#{shopping},num=#{num},price=#{price}
+		where
+			id=#{id}
+	</update >
+	<delete id="deletesho" >
+		delete from
+			<include refid="tableName"/>
+		<where>
+			<if test="id != 0">id = #{id}</if>
+			<if test="userid != 0">and userid = #{userid}</if>
+		</where>
+	</delete>
+
+	<select  id="selectsho"  resultMap="map2" parameterType="com.neusoft.user.pojo.ShoppingCart" >
+		SELECT s.id ID,s.shopping comid,s.userid userid,
+			c.comname comname,c.cid cid,c.describe describe,
+			c.price cprice,s.num snum,s.price allprice
+		FROM
+			shoppingcart s,commodity c
+		<where>
+			s.shopping = c.id
+			<if test="userid != 0 ">and userid = #{userid}</if>
+		</where>
+	</select>
+	
+</mapper>
